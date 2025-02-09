@@ -1,7 +1,6 @@
 from flask import Flask, request, flash, redirect, url_for, render_template_string, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
-from models import db, Question  # Assuming you have the necessary models
 import random
 
 STATIC_PASSWORD = 'your_secure_password'  # Change this to your desired static password
