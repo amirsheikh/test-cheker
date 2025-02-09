@@ -141,7 +141,7 @@ def import_excel():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>آپلود فایل سوالات</title>
-        <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazir@4.0.2/css.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font/dist/font-face.css" rel="stylesheet">
         <style>
             body {
                 font-family: 'Vazir', sans-serif;
