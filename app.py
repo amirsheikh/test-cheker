@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, from flask import Flask, request, flash, redirect, url_for, render_template_string, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
+from models import db, Question  # Assuming you have the necessary models
 import random
+
+STATIC_PASSWORD = 'your_secure_password'  # Change this to your desired static password
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///responses.db'
@@ -84,10 +87,15 @@ def results():
     
     return render_template('results.html', results=results_data)
 
-
 @app.route('/import_excel', methods=['GET', 'POST'])
 def import_excel():
     if request.method == 'POST':
+        # Check if password matches
+        password = request.form.get('password')
+        if password != STATIC_PASSWORD:
+            flash('Incorrect password!', 'danger')
+            return redirect(url_for('import_excel'))
+
         # Get the uploaded file
         file = request.files['file']
         if file:
@@ -127,15 +135,102 @@ def import_excel():
             flash('Questions imported successfully!', 'success')
             return redirect(url_for('index'))
 
-    return '''
+    return render_template_string('''
     <!doctype html>
-    <title>Import Questions</title>
-    <h1>Upload Excel File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>آپلود فایل سوالات</title>
+        <link href="https://cdn.jsdelivr.net/npm/@fontsource/vazir@4.0.2/css.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Vazir', sans-serif;
+                background-color: #f0f4f8;
+                margin: 0;
+                padding: 0;
+                direction: rtl;
+            }
+            .container {
+                width: 80%;
+                margin: 50px auto;
+                padding: 30px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                text-align: center;
+                color: #333;
+            }
+            .form-group {
+                margin: 20px 0;
+            }
+            label {
+                font-size: 18px;
+                color: #555;
+            }
+            input[type="password"],
+            input[type="file"],
+            input[type="submit"] {
+                width: 100%;
+                padding: 10px;
+                margin-top: 10px;
+                font-size: 16px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            input[type="submit"] {
+                background-color: #4CAF50;
+                color: white;
+                cursor: pointer;
+                border: none;
+                transition: background-color 0.3s;
+            }
+            input[type="submit"]:hover {
+                background-color: #45a049;
+            }
+            .alert {
+                margin-top: 20px;
+                padding: 15px;
+                color: white;
+                background-color: #f44336;
+                border-radius: 5px;
+                text-align: center;
+            }
+            .alert.success {
+                background-color: #4CAF50;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>آپلود فایل سوالات</h1>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="password">کلمه عبور:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="file">انتخاب فایل اکسل:</label>
+                    <input type="file" name="file" required>
+                </div>
+                <input type="submit" value="آپلود فایل">
+            </form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul>
+                    {% for category, message in messages %}
+                        <li class="alert {% if category == 'success' %}success{% else %}danger{% endif %}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </body>
+    </html>
+    ''')
+
 
 if __name__ == '__main__':
     # Initialize the database and run the application
