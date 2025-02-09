@@ -1,4 +1,4 @@
-from flask import Flask, request, flash, redirect, url_for, render_template_string, request, redirect, url_for, flash
+from flask import Flask, request, flash, redirect, url_for, render_template_string, request, redirect, url_for, flash, render_template
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 import random
